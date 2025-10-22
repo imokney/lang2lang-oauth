@@ -1,3 +1,4 @@
+// /api/auth.js
 const GITHUB_AUTHORIZE_URL = "https://github.com/login/oauth/authorize";
 
 module.exports = (req, res) => {
@@ -9,10 +10,11 @@ module.exports = (req, res) => {
   }
 
   const redirectUri = `${PUBLIC_BASE_URL}/api/callback`;
-  const scope = (req.query && req.query.scope) || "repo";
 
-  // ➊ пытаемся взять origin из query (Decap часто его передает)
-  // ➋ fallback на заголовки
+  // Decap обычно просит 'repo,user'; оставим это по умолчанию
+  const scope = (req.query && req.query.scope) || "repo,user";
+
+  // Пытаемся получить origin из query → потом из заголовков
   const originFromQuery = (req.query && req.query.origin) || "";
   const originFromHeaders = (req.headers && (req.headers.origin || req.headers.referer)) || "";
   const state = encodeURIComponent(originFromQuery || originFromHeaders || "");
